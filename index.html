@@ -7,7 +7,6 @@
   <style>
     body { margin: 0; overflow: hidden; background-color: #020208; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     
-    /* Pantalla de Intro */
     #intro-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: radial-gradient(circle, #150a21 0%, #020208 100%); color: #fff;
@@ -22,7 +21,6 @@
     #click-hint { font-size: 15px; color: #fde047; animation: pulse 2s infinite; letter-spacing: 1px; }
     @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
     
-    /* Controles 3D */
     #info {
       position: absolute; bottom: 25px; width: 100%; text-align: center;
       color: rgba(255,255,255,0.7); pointer-events: none; font-size: 14px; z-index: 1; opacity: 0; transition: opacity 2s ease;
@@ -38,7 +36,6 @@
     <source src="those_years_are_over.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- Pantalla de Introducción -->
   <div id="intro-screen">
     <div id="intro-text">Para empezar...</div>
     <div id="click-hint">(Toca la pantalla en cualquier parte)</div>
@@ -47,7 +44,6 @@
   <div id="info">Desliza para mover la cámara y explorar el universo de mensajes ✨</div>
 
   <script>
-    // --- 1. LÓGICA DE INTRODUCCIÓN Y MÚSICA ---
     const introTexts = [
       "Para mi Eli ❤️",
       "Por ser mi niña hemocha mi foquita lelonda",
@@ -90,7 +86,6 @@
       }
     });
 
-    // --- 2. CONFIGURACIÓN 3D ---
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x020208, 0.008);
 
@@ -107,7 +102,6 @@
     controls.autoRotate = true; 
     controls.autoRotateSpeed = 0.35; 
 
-    // --- 3. ILUMINACIÓN ESPACIAL ---
     scene.add(new THREE.AmbientLight(0xffffff, 0.7));
     
     const sunLight = new THREE.PointLight(0xffea75, 3, 70);
@@ -118,8 +112,8 @@
     pinkLight.position.set(-20, -10, 20);
     scene.add(pinkLight);
 
-    // --- 4. CIELO ESTRELLADO CON BRILLOS AMARILLOS ---
-    const starCount = 1200;
+    // --- ESTRELLAS CON BRILLO AMARILLO INTENSO ---
+    const starCount = 1500;
     const starGeo = new THREE.BufferGeometry();
     const starPos = new Float32Array(starCount * 3);
 
@@ -135,14 +129,14 @@
     const ctxS = canvasS.getContext('2d');
     const gradS = ctxS.createRadialGradient(32, 32, 0, 32, 32, 32);
     gradS.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    gradS.addColorStop(0.4, 'rgba(253, 224, 71, 0.8)'); // Brillo amarillo estelar
+    gradS.addColorStop(0.3, 'rgba(255, 235, 59, 1)'); // Amarillo brillante puro
     gradS.addColorStop(1, 'rgba(0, 0, 0, 0)');
     ctxS.fillStyle = gradS;
     ctxS.fillRect(0, 0, 64, 64);
     
     const starTexture = new THREE.CanvasTexture(canvasS);
     const starMat = new THREE.PointsMaterial({
-      size: 0.9,
+      size: 1.1,
       map: starTexture,
       transparent: true,
       blending: THREE.AdditiveBlending,
@@ -151,7 +145,7 @@
     const starField = new THREE.Points(starGeo, starMat);
     scene.add(starField);
 
-    // --- 5. CORAZÓN 3D ROSA DERECHO EN EL CENTRO ---
+    // --- CORAZÓN 3D PERFECTAMENTE ORIENTADO ---
     function createHeartMesh() {
       const x = 0, y = 0;
       const heartShape = new THREE.Shape();
@@ -164,16 +158,16 @@
       heartShape.bezierCurveTo(x + 7, y, x + 5, y + 5, x + 5, y + 5);
 
       const extrudeSettings = {
-        depth: 4,
+        depth: 3,
         bevelEnabled: true,
-        bevelSegments: 5,
+        bevelSegments: 4,
         steps: 2,
-        bevelSize: 1.5,
-        bevelThickness: 1.5
+        bevelSize: 1,
+        bevelThickness: 1
       };
 
       const geometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
-      geometry.center(); // Centrar el origen del corazón
+      geometry.center();
 
       const material = new THREE.MeshStandardMaterial({
         color: 0xff4797,
@@ -183,10 +177,10 @@
       });
 
       const heartMesh = new THREE.Mesh(geometry, material);
-      heartMesh.scale.set(0.18, 0.18, 0.18); 
+      heartMesh.scale.set(0.15, 0.15, 0.15); 
       
-      // ROTACIÓN CORREGIDA: Girar 180 grados en el eje X para enderezarlo por completo
-      heartMesh.rotation.x = Math.PI; 
+      // Orientación limpia sin inversiones extrañas
+      heartMesh.rotation.z = Math.PI; 
       
       return heartMesh;
     }
@@ -195,7 +189,6 @@
     centralHeart.position.set(0, 0, 0);
     scene.add(centralHeart);
 
-    // --- 6. TEXTOS FLOTANTES CON TUS FRASES ---
     function createGlowText(text) {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -208,7 +201,6 @@
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Brillo amarillo estético para los textos
       ctx.shadowColor = '#fde047';
       ctx.shadowBlur = 22;
 
@@ -292,18 +284,15 @@
       sprites.push({ mesh: sprite, offset: Math.random() * 100 });
     });
 
-    // --- 7. BUCLE DE ANIMACIÓN ---
     function animate() {
       requestAnimationFrame(animate);
       
       const time = Date.now() * 0.0006;
       
-      // Latido suave del corazón central y rotación (manteniendo la orientación correcta en X)
       const heartbeat = 1 + Math.sin(time * 4) * 0.06;
-      centralHeart.scale.set(0.18 * heartbeat, 0.18 * heartbeat, 0.18 * heartbeat);
+      centralHeart.scale.set(0.15 * heartbeat, 0.15 * heartbeat, 0.15 * heartbeat);
       centralHeart.rotation.y += 0.005;
 
-      // Animar estrellas
       const positions = starField.geometry.attributes.position.array;
       for(let i = 1; i < positions.length; i += 3) {
         positions[i] -= 0.015;
@@ -311,7 +300,6 @@
       }
       starField.geometry.attributes.position.needsUpdate = true;
 
-      // Flotar textos suavemente
       sprites.forEach(s => {
         s.mesh.position.y += Math.sin(time * 2 + s.offset) * 0.004;
       });
