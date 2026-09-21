@@ -32,8 +32,8 @@
 </head>
 <body>
 
-  <!-- Audio: Asegúrate de tener el archivo those_years_are_over.mp3 en la misma carpeta -->
-  <audio id="bgMusic" loop>
+  <!-- Audio corregido para que cargue y suene bien -->
+  <audio id="bgMusic" loop preload="auto">
     <source src="those_years_are_over.mp3" type="audio/mpeg">
   </audio>
 
@@ -43,7 +43,7 @@
     <div id="click-hint">(Toca la pantalla en cualquier parte)</div>
   </div>
 
-  <div id="info">Desliza para mover la cámara 🌻</div>
+  <div id="info">Desliza para mover la cámara y ver todo con amor 🌻</div>
 
   <script>
     // --- 1. LÓGICA DE LA INTRODUCCIÓN Y MÚSICA ---
@@ -63,13 +63,12 @@
     introScreen.addEventListener('click', () => {
       // Primer clic: Inicia música bajita
       if (clickCount === 0) {
-        bgMusic.volume = 0.2; // Volumen bajo (20%)
+        bgMusic.volume = 0.2; 
         bgMusic.play().catch(e => console.log("Error de audio:", e));
         document.getElementById('click-hint').innerText = "(Toca para continuar)";
       }
 
       if (clickCount < introTexts.length) {
-        // Cambiar texto con desvanecimiento
         textElement.style.opacity = 0;
         setTimeout(() => {
           textElement.innerText = introTexts[clickCount];
@@ -82,7 +81,6 @@
         setTimeout(() => { introScreen.style.display = 'none'; }, 1500);
         infoElement.style.opacity = 1;
         
-        // Subir volumen progresivamente hasta 60%
         let volInterval = setInterval(() => {
           if (bgMusic.volume < 0.6) {
             bgMusic.volume = Math.min(bgMusic.volume + 0.05, 0.6);
@@ -95,10 +93,10 @@
 
     // --- 2. CONFIGURACIÓN 3D ---
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x050510, 0.015);
+    scene.fog = new THREE.FogExp2(0x050510, 0.012);
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 2, 18);
+    camera.position.set(0, 2, 20);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -107,7 +105,7 @@
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.autoRotate = true; 
-    controls.autoRotateSpeed = 0.6; // Rotación automática de la cámara
+    controls.autoRotateSpeed = 0.4; 
 
     // Iluminación
     scene.add(new THREE.AmbientLight(0xffffff, 0.8));
@@ -136,37 +134,35 @@
     }
 
     const flowers = [];
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 80; i++) {
       const flower = createFlower();
       flower.position.set(
-        (Math.random() - 0.5) * 45,
-        (Math.random() - 0.5) * 20,
-        (Math.random() - 0.5) * 45
+        (Math.random() - 0.5) * 60,
+        (Math.random() - 0.5) * 25,
+        (Math.random() - 0.5) * 60
       );
       flower.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
       scene.add(flower);
       flowers.push(flower);
     }
 
-    // --- 4. TEXTOS FLOTANTES CON TUS FRASES ---
+    // --- 4. TEXTOS FLOTANTES (100% PERSONALIZADOS CON TUS DATOS) ---
     function createMinimalistText(text) {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      canvas.width = 2048; // Canvas ancho para frases largas
+      canvas.width = 2048; 
       canvas.height = 256;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height); 
       
-      ctx.font = 'bold 55px "Segoe UI", sans-serif';
+      ctx.font = 'bold 50px "Segoe UI", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Borde oscuro para que se lea perfecto sobre el fondo
       ctx.lineWidth = 8;
       ctx.strokeStyle = 'rgba(10, 10, 20, 0.9)';
       ctx.strokeText(text, canvas.width / 2, canvas.height / 2);
 
-      // Texto amarillo brillante
       ctx.fillStyle = '#fde047'; 
       ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
@@ -174,35 +170,71 @@
       texture.minFilter = THREE.LinearFilter;
       const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
       const sprite = new THREE.Sprite(spriteMat);
-      sprite.scale.set(22, 2.7, 1); 
+      sprite.scale.set(20, 2.5, 1); 
       return sprite;
     }
 
-    // TUS FRASES PERSONALIZADAS
     const frases = [
-      "Eres la Hokage de mi corazón 🍃",
-      "Esos cachetecitos me dan 1000 años de vida 🥺",
-      "Aquí manda mi Eli y la queso 👑",
-      "Mi amor por ti es mayor que el chakra de Kurama 🦊",
-      "Mi gordita hermosa, mi bebé ❤️",
-      "Esperaremos estos años juntos ⏳",
+      // Sobre Eli y apodos cariñosos
+      "Para mi Eli, la dueña de todo mi corazón ❤️",
+      "Mi gordita hermosa, mi bebé 🥺",
+      "Mi foquita lelonda, la más tierna del universo 🦭",
       "Tú y yo contra el mundo, mi plo 💕",
-      "Ni el Tsukuyomi es tan hermoso como tus ojitos ✨",
-      "Mi foquita lelonda 🦭",
-      "La sonrisa de mi niña ilumina todo 🌻",
-      "Nuestro equipo 7 de a dos 🍥",
-      "Valdrá la pena cada segundo juntos 🥰",
-      "Te amo, dueña de mi quincena 😂",
-      "Mi persona favorita en toda la aldea 💛"
+      "La sonrisa de mi niña ilumina toda mi vida 🌻",
+      "Mi bebé, mi mundo, mi todo 💖",
+      "Mi persona favorita en todo el planeta 💛",
+      "Gordita mía, eres perfecta tal y como eres y te amo así 🥰",
+      
+      // Cachetitos, ojitos y ternura (100% tuyos)
+      "Me encantan tus cachetitos, cuando sonríes se marcan más y me dan mucha ternura 🥺",
+      "Eres tan linda cuando sonríes y se te marcan tus cachetitos 🫠",
+      "Tienes unos ojitos hermosos que me encantan mirarle ✨",
+      "Tus ojitos brillan tan bonito cuando estás feliz 🌌",
+      "Cada vez que te sonríes y se marcan tus cachetes, me derrito de amor 😍",
+      "Me da muchísima ternura cada gesto que haces 🥺",
+      "Nadie tiene una sonrisa más hermosa y tierna que la tuya 🌻",
+      "Me encanta hacerte sentir bien y verte sonreír siempre 💛",
+
+      // Dinámica de la relación (Ella manda)
+      "Aquí manda mi Eli y se hace lo que ella diga 👑",
+      "Lo que mi niña quiera, se hace y punto 😌",
+      "Mi Eli preciosa, la que manda en esta relación 👸",
+      "Te amo muchísimo, eres la más hermosa de todas 💕",
+      "Soy el chico más afortunado por tenerte a mi lado 💍",
+      "Me tienes enamorado por completo 🤤",
+      
+      // Naruto (Otaku)
+      "Eres la Hokage de mi corazón 🍃",
+      "Nuestro amor es más fuerte que cualquier técnica de Naruto 🌀",
+      "Tú eres mi camino ninja favorito ✨",
+      "Dattebayo! Eres lo mejor que me ha pasado 🍜",
+      "Siempre te cuidaré y estaré para ti, mi amor 🤞",
+      "Eres la dueña de la Aldea de la Hoja y de mi vida 🍃",
+      "Mi niña hermosa, la kunoichi más linda de todas 🌸",
+      "Contigo quiero vivir todas las aventuras de nuestra historia 🍥",
+      "Mi amor por ti es inmenso y sincero 💛",
+      "Juntos superaremos cualquier cosa que se presente 📜",
+      
+      // Futuro y años juntos
+      "Esperaremos estos años juntos, te lo prometo ⏳",
+      "Valdrá la pena cada segundo esperando y construyendo nuestro futuro 🥰",
+      "No importa el tiempo, siempre quiero estar contigo 🕰️",
+      "El futuro es hermoso si es a tu lado, mi niña 🌅",
+      "Cuento los días para estar siempre juntos 🗓️",
+      "La paciencia es fácil cuando la recompensa eres tú ❤️",
+      "Superaremos todo juntos, mi amor 🚀",
+      "Prometo amarte y cuidarte todos los años de nuestra vida ♾️",
+      "Cada día que pasa te amo un poquito más 📈",
+      "Valió la pena encontrarte y valdrá la pena cada año a tu lado 🛡️"
     ];
 
     const sprites = [];
     frases.forEach((text) => {
       const sprite = createMinimalistText(text);
       sprite.position.set(
-        (Math.random() - 0.5) * 35,
-        (Math.random() - 0.5) * 15 + 2,
-        (Math.random() - 0.5) * 35
+        (Math.random() - 0.5) * 50,
+        (Math.random() - 0.5) * 20 + 2,
+        (Math.random() - 0.5) * 50
       );
       scene.add(sprite);
       sprites.push({ mesh: sprite, offset: Math.random() * 100 });
@@ -214,14 +246,12 @@
       
       const time = Date.now() * 0.0005;
       
-      // Animar flores
       flowers.forEach((f, index) => {
         f.rotation.y += 0.005;
         f.rotation.z += 0.002;
         f.position.y += Math.sin(time + index) * 0.01;
       });
 
-      // Animar flotación suave de los textos
       sprites.forEach(s => {
         s.mesh.position.y += Math.sin(time * 2 + s.offset) * 0.005;
       });
