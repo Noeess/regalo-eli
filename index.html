@@ -129,7 +129,7 @@
     const ctxS = canvasS.getContext('2d');
     const gradS = ctxS.createRadialGradient(32, 32, 0, 32, 32, 32);
     gradS.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    gradS.addColorStop(0.3, 'rgba(255, 235, 59, 1)'); // Amarillo brillante puro
+    gradS.addColorStop(0.3, 'rgba(255, 235, 59, 1)');
     gradS.addColorStop(1, 'rgba(0, 0, 0, 0)');
     ctxS.fillStyle = gradS;
     ctxS.fillRect(0, 0, 64, 64);
@@ -144,50 +144,6 @@
     });
     const starField = new THREE.Points(starGeo, starMat);
     scene.add(starField);
-
-    // --- CORAZÓN 3D PERFECTAMENTE ORIENTADO ---
-    function createHeartMesh() {
-      const x = 0, y = 0;
-      const heartShape = new THREE.Shape();
-      heartShape.moveTo(x + 5, y + 5);
-      heartShape.bezierCurveTo(x + 5, y + 5, x + 4, y, x, y);
-      heartShape.bezierCurveTo(x - 6, y, x - 6, y + 7, x - 6, y + 7);
-      heartShape.bezierCurveTo(x - 6, y + 11, x - 3, y + 15.4, x + 5, y + 19);
-      heartShape.bezierCurveTo(x + 13, y + 15.4, x + 16, y + 11, x + 16, y + 7);
-      heartShape.bezierCurveTo(x + 16, y + 7, x + 16, y, x + 10, y);
-      heartShape.bezierCurveTo(x + 7, y, x + 5, y + 5, x + 5, y + 5);
-
-      const extrudeSettings = {
-        depth: 3,
-        bevelEnabled: true,
-        bevelSegments: 4,
-        steps: 2,
-        bevelSize: 1,
-        bevelThickness: 1
-      };
-
-      const geometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
-      geometry.center();
-
-      const material = new THREE.MeshStandardMaterial({
-        color: 0xff4797,
-        emissive: 0xaa1155,
-        roughness: 0.2,
-        metalness: 0.4
-      });
-
-      const heartMesh = new THREE.Mesh(geometry, material);
-      heartMesh.scale.set(0.15, 0.15, 0.15); 
-      
-      // Orientación limpia sin inversiones extrañas
-      heartMesh.rotation.z = Math.PI; 
-      
-      return heartMesh;
-    }
-
-    const centralHeart = createHeartMesh();
-    centralHeart.position.set(0, 0, 0);
-    scene.add(centralHeart);
 
     function createGlowText(text) {
       const canvas = document.createElement('canvas');
@@ -272,7 +228,7 @@
       let v = Math.random();
       let theta = u * 2.0 * Math.PI;
       let phi = Math.acos(2.0 * v - 1.0);
-      let r = 10 + Math.random() * 20;
+      let r = 8 + Math.random() * 22;
 
       sprite.position.set(
         r * Math.sin(phi) * Math.cos(theta),
@@ -289,10 +245,6 @@
       
       const time = Date.now() * 0.0006;
       
-      const heartbeat = 1 + Math.sin(time * 4) * 0.06;
-      centralHeart.scale.set(0.15 * heartbeat, 0.15 * heartbeat, 0.15 * heartbeat);
-      centralHeart.rotation.y += 0.005;
-
       const positions = starField.geometry.attributes.position.array;
       for(let i = 1; i < positions.length; i += 3) {
         positions[i] -= 0.015;
