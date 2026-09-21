@@ -17,9 +17,9 @@
     #intro-text { 
       font-size: 30px; text-align: center; max-width: 85%; 
       margin-bottom: 20px; transition: opacity 0.5s ease; font-weight: 600;
-      text-shadow: 0 0 15px rgba(244, 114, 182, 0.6);
+      text-shadow: 0 0 15px rgba(253, 224, 71, 0.6);
     }
-    #click-hint { font-size: 15px; color: #f472b6; animation: pulse 2s infinite; letter-spacing: 1px; }
+    #click-hint { font-size: 15px; color: #fde047; animation: pulse 2s infinite; letter-spacing: 1px; }
     @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
     
     /* Controles 3D */
@@ -110,15 +110,15 @@
     // --- 3. ILUMINACIÓN ESPACIAL ---
     scene.add(new THREE.AmbientLight(0xffffff, 0.7));
     
-    const pinkLight = new THREE.PointLight(0xff66b2, 3, 70);
-    pinkLight.position.set(0, 5, 0);
+    const sunLight = new THREE.PointLight(0xffea75, 3, 70);
+    sunLight.position.set(0, 5, 0);
+    scene.add(sunLight);
+
+    const pinkLight = new THREE.PointLight(0xff66b2, 2, 60);
+    pinkLight.position.set(-20, -10, 20);
     scene.add(pinkLight);
 
-    const blueLight = new THREE.PointLight(0x77bbff, 2, 60);
-    blueLight.position.set(-20, -10, 20);
-    scene.add(blueLight);
-
-    // --- 4. CIELO ESTRELLADO (GALAXIA) ---
+    // --- 4. CIELO ESTRELLADO CON BRILLOS AMARILLOS ---
     const starCount = 1200;
     const starGeo = new THREE.BufferGeometry();
     const starPos = new Float32Array(starCount * 3);
@@ -135,7 +135,7 @@
     const ctxS = canvasS.getContext('2d');
     const gradS = ctxS.createRadialGradient(32, 32, 0, 32, 32, 32);
     gradS.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    gradS.addColorStop(0.4, 'rgba(244, 114, 182, 0.7)');
+    gradS.addColorStop(0.4, 'rgba(253, 224, 71, 0.8)'); // Brillo amarillo estelar
     gradS.addColorStop(1, 'rgba(0, 0, 0, 0)');
     ctxS.fillStyle = gradS;
     ctxS.fillRect(0, 0, 64, 64);
@@ -151,7 +151,7 @@
     const starField = new THREE.Points(starGeo, starMat);
     scene.add(starField);
 
-    // --- 5. CORAZÓN 3D ROSA EN EL CENTRO ---
+    // --- 5. CORAZÓN 3D ROSA DERECHO EN EL CENTRO ---
     function createHeartMesh() {
       const x = 0, y = 0;
       const heartShape = new THREE.Shape();
@@ -173,7 +173,7 @@
       };
 
       const geometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
-      geometry.center(); // Centrar el corazón
+      geometry.center(); // Centrar el origen del corazón
 
       const material = new THREE.MeshStandardMaterial({
         color: 0xff4797,
@@ -183,8 +183,11 @@
       });
 
       const heartMesh = new THREE.Mesh(geometry, material);
-      heartMesh.scale.set(0.18, 0.18, 0.18); // Ajustar tamaño ideal
-      heartMesh.rotation.math = Math.PI; // Orientarlo bien
+      heartMesh.scale.set(0.18, 0.18, 0.18); 
+      
+      // ROTACIÓN CORREGIDA: Girar 180 grados en el eje X para enderezarlo por completo
+      heartMesh.rotation.x = Math.PI; 
+      
       return heartMesh;
     }
 
@@ -205,15 +208,15 @@
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Sombra y brillo rosado/dorado estético
-      ctx.shadowColor = '#f472b6';
+      // Brillo amarillo estético para los textos
+      ctx.shadowColor = '#fde047';
       ctx.shadowBlur = 22;
 
       ctx.lineWidth = 10;
       ctx.strokeStyle = 'rgba(5, 2, 15, 0.95)';
       ctx.strokeText(text, canvas.width / 2, canvas.height / 2);
 
-      ctx.fillStyle = '#fff0f5'; 
+      ctx.fillStyle = '#fffde6'; 
       ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
       const texture = new THREE.CanvasTexture(canvas);
@@ -273,12 +276,11 @@
     frases.forEach((text) => {
       const sprite = createGlowText(text);
       
-      // Distribuir en esfera alrededor del corazón central (evitando que caigan justo en el centro 0,0,0)
       let u = Math.random();
       let v = Math.random();
       let theta = u * 2.0 * Math.PI;
       let phi = Math.acos(2.0 * v - 1.0);
-      let r = 10 + Math.random() * 20; // Radio de distancia del centro
+      let r = 10 + Math.random() * 20;
 
       sprite.position.set(
         r * Math.sin(phi) * Math.cos(theta),
@@ -296,12 +298,12 @@
       
       const time = Date.now() * 0.0006;
       
-      // Latido suave del corazón central y rotación
+      // Latido suave del corazón central y rotación (manteniendo la orientación correcta en X)
       const heartbeat = 1 + Math.sin(time * 4) * 0.06;
       centralHeart.scale.set(0.18 * heartbeat, 0.18 * heartbeat, 0.18 * heartbeat);
       centralHeart.rotation.y += 0.005;
 
-      // Animar estrellas del espacio
+      // Animar estrellas
       const positions = starField.geometry.attributes.position.array;
       for(let i = 1; i < positions.length; i += 3) {
         positions[i] -= 0.015;
