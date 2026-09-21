@@ -5,26 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Para mi Eli 🌻</title>
   <style>
-    body { margin: 0; overflow: hidden; background-color: #050510; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { margin: 0; overflow: hidden; background-color: #030308; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     
     /* Pantalla de Intro */
     #intro-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background-color: #050510; color: #fff;
+      background: radial-gradient(circle, #100b24 0%, #030308 100%); color: #fff;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       z-index: 10; cursor: pointer; transition: opacity 1.5s ease;
     }
     #intro-text { 
-      font-size: 28px; text-align: center; max-width: 85%; 
-      margin-bottom: 20px; transition: opacity 0.5s ease; font-weight: bold;
+      font-size: 30px; text-align: center; max-width: 85%; 
+      margin-bottom: 20px; transition: opacity 0.5s ease; font-weight: 600;
+      text-shadow: 0 0 15px rgba(253, 224, 71, 0.5);
     }
-    #click-hint { font-size: 14px; color: #888; animation: pulse 2s infinite; }
+    #click-hint { font-size: 15px; color: #fde047; animation: pulse 2s infinite; letter-spacing: 1px; }
     @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
     
     /* Controles 3D */
     #info {
-      position: absolute; bottom: 20px; width: 100%; text-align: center;
-      color: rgba(255,255,255,0.6); pointer-events: none; font-size: 14px; z-index: 1; opacity: 0; transition: opacity 2s ease;
+      position: absolute; bottom: 25px; width: 100%; text-align: center;
+      color: rgba(255,255,255,0.7); pointer-events: none; font-size: 14px; z-index: 1; opacity: 0; transition: opacity 2s ease;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -32,7 +34,6 @@
 </head>
 <body>
 
-  <!-- Audio corregido para que cargue y suene bien -->
   <audio id="bgMusic" loop preload="auto">
     <source src="those_years_are_over.mp3" type="audio/mpeg">
   </audio>
@@ -43,10 +44,10 @@
     <div id="click-hint">(Toca la pantalla en cualquier parte)</div>
   </div>
 
-  <div id="info">Desliza para mover la cámara y ver todo con amor 🌻</div>
+  <div id="info">Desliza para mover la cámara y explorar el universo de mensajes 🌻</div>
 
   <script>
-    // --- 1. LÓGICA DE LA INTRODUCCIÓN Y MÚSICA ---
+    // --- 1. LÓGICA DE INTRODUCCIÓN Y MÚSICA ---
     const introTexts = [
       "Para mi Eli ❤️",
       "Por ser mi niña hemocha mi foquita lelonda",
@@ -61,7 +62,6 @@
     const bgMusic = document.getElementById('bgMusic');
 
     introScreen.addEventListener('click', () => {
-      // Primer clic: Inicia música bajita
       if (clickCount === 0) {
         bgMusic.volume = 0.2; 
         bgMusic.play().catch(e => console.log("Error de audio:", e));
@@ -76,7 +76,6 @@
           clickCount++;
         }, 300);
       } else {
-        // Último clic: Abrir 3D y subir volumen
         introScreen.style.opacity = 0;
         setTimeout(() => { introScreen.style.display = 'none'; }, 1500);
         infoElement.style.opacity = 1;
@@ -93,61 +92,126 @@
 
     // --- 2. CONFIGURACIÓN 3D ---
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x050510, 0.012);
+    scene.fog = new THREE.FogExp2(0x030308, 0.010);
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 2, 20);
+    camera.position.set(0, 3, 22);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
     document.body.appendChild(renderer.domElement);
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.autoRotate = true; 
-    controls.autoRotateSpeed = 0.4; 
+    controls.autoRotateSpeed = 0.35; 
 
-    // Iluminación
-    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-    const pointLight = new THREE.PointLight(0xffdd00, 2, 50);
-    scene.add(pointLight);
+    // --- 3. ILUMINACIÓN CINEMÁTICA Y BRILLANTE ---
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    
+    const sunLight = new THREE.PointLight(0xffea75, 3, 60);
+    sunLight.position.set(0, 10, 0);
+    scene.add(sunLight);
 
-    // --- 3. CREACIÓN DE FLORES ---
-    function createFlower() {
+    const pinkLight = new THREE.PointLight(0xff77aa, 2, 50);
+    pinkLight.position.set(-15, -10, 15);
+    scene.add(pinkLight);
+
+    const blueLight = new THREE.PointLight(0x77bbff, 2, 50);
+    blueLight.position.set(15, -10, -15);
+    scene.add(blueLight);
+
+    // --- 4. POLVO ESTELAR Y BRILLOS MÁGICOS ---
+    const particleCount = 700;
+    const particleGeo = new THREE.BufferGeometry();
+    const particlePos = new Float32Array(particleCount * 3);
+
+    for (let i = 0; i < particleCount * 3; i += 3) {
+      particlePos[i] = (Math.random() - 0.5) * 70;
+      particlePos[i+1] = (Math.random() - 0.5) * 40;
+      particlePos[i+2] = (Math.random() - 0.5) * 70;
+    }
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+
+    // Crear textura brillante para las partículas
+    const canvasP = document.createElement('canvas');
+    canvasP.width = 64; canvasP.height = 64;
+    const ctxP = canvasP.getContext('2d');
+    const gradP = ctxP.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gradP.addColorStop(0, 'rgba(255, 255, 200, 1)');
+    gradP.addColorStop(0.3, 'rgba(253, 224, 71, 0.8)');
+    gradP.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctxP.fillStyle = gradP;
+    ctxP.fillRect(0, 0, 64, 64);
+    
+    const particleTexture = new THREE.CanvasTexture(canvasP);
+    const particleMat = new THREE.PointsMaterial({
+      size: 0.8,
+      map: particleTexture,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+    const starDust = new THREE.Points(particleGeo, particleMat);
+    scene.add(starDust);
+
+    // --- 5. CREACIÓN DE FLORES DETALLADAS Y TEXTURIZADAS ---
+    function createDetailedFlower() {
       const flowerGroup = new THREE.Group();
-      const centerGeo = new THREE.SphereGeometry(0.3, 16, 16);
-      const centerMat = new THREE.MeshBasicMaterial({ color: 0x4a2e1b });
-      flowerGroup.add(new THREE.Mesh(centerGeo, centerMat));
 
-      const petalGeo = new THREE.ConeGeometry(0.2, 1.2, 8);
-      const petalMat = new THREE.MeshStandardMaterial({ color: 0xffd700, roughness: 0.2 });
+      // Centro de la flor detallado (textura de girasol)
+      const centerGeo = new THREE.SphereGeometry(0.35, 24, 24);
+      const centerMat = new THREE.MeshStandardMaterial({ 
+        color: 0x3d2314, 
+        roughness: 0.9,
+        metalness: 0.1
+      });
+      const centerMesh = new THREE.Mesh(centerGeo, centerMat);
+      flowerGroup.add(centerMesh);
 
-      for (let i = 0; i < 12; i++) {
+      // Pétalos con volumen y forma curva elegante
+      const petalGeo = new THREE.BoxGeometry(0.22, 1.4, 0.05);
+      const petalMat = new THREE.MeshStandardMaterial({ 
+        color: 0xffd700, 
+        emissive: 0x332200,
+        roughness: 0.3,
+        metalness: 0.2
+      });
+
+      const petalCount = 16;
+      for (let i = 0; i < petalCount; i++) {
         const petal = new THREE.Mesh(petalGeo, petalMat);
-        const angle = (i / 12) * Math.PI * 2;
-        petal.position.set(Math.cos(angle) * 0.7, Math.sin(angle) * 0.7, 0);
+        const angle = (i / petalCount) * Math.PI * 2;
+        
+        petal.position.set(Math.cos(angle) * 0.6, Math.sin(angle) * 0.6, 0);
         petal.rotation.z = angle - Math.PI / 2;
-        petal.rotation.x = Math.PI / 2;
+        petal.rotation.x = 0.2; // Inclinación natural hacia afuera
+        
         flowerGroup.add(petal);
       }
       return flowerGroup;
     }
 
     const flowers = [];
-    for (let i = 0; i < 80; i++) {
-      const flower = createFlower();
+    for (let i = 0; i < 65; i++) {
+      const flower = createDetailedFlower();
       flower.position.set(
-        (Math.random() - 0.5) * 60,
-        (Math.random() - 0.5) * 25,
-        (Math.random() - 0.5) * 60
+        (Math.random() - 0.5) * 55,
+        (Math.random() - 0.5) * 22,
+        (Math.random() - 0.5) * 55
       );
-      flower.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+      flower.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+      
+      const scale = 0.7 + Math.random() * 0.6;
+      flower.scale.set(scale, scale, scale);
+
       scene.add(flower);
-      flowers.push(flower);
+      flowers.push({ mesh: flower, rotSpeedX: (Math.random() - 0.5) * 0.01, rotSpeedY: (Math.random() - 0.5) * 0.01 });
     }
 
-    // --- 4. TEXTOS FLOTANTES (100% PERSONALIZADOS CON TUS DATOS) ---
-    function createMinimalistText(text) {
+    // --- 6. TEXTOS FLOTANTES BRILLANTES ---
+    function createGlowText(text) {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       canvas.width = 2048; 
@@ -155,27 +219,30 @@
 
       ctx.clearRect(0, 0, canvas.width, canvas.height); 
       
-      ctx.font = 'bold 50px "Segoe UI", sans-serif';
+      ctx.font = 'bold 52px "Segoe UI", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      ctx.lineWidth = 8;
-      ctx.strokeStyle = 'rgba(10, 10, 20, 0.9)';
+      // Sombra exterior con brillo dorado luminoso
+      ctx.shadowColor = '#fde047';
+      ctx.shadowBlur = 20;
+
+      ctx.lineWidth = 10;
+      ctx.strokeStyle = 'rgba(5, 5, 15, 0.95)';
       ctx.strokeText(text, canvas.width / 2, canvas.height / 2);
 
-      ctx.fillStyle = '#fde047'; 
+      ctx.fillStyle = '#fffae6'; 
       ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
       const texture = new THREE.CanvasTexture(canvas);
       texture.minFilter = THREE.LinearFilter;
-      const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+      const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending });
       const sprite = new THREE.Sprite(spriteMat);
-      sprite.scale.set(20, 2.5, 1); 
+      sprite.scale.set(21, 2.6, 1); 
       return sprite;
     }
 
     const frases = [
-      // Sobre Eli y apodos cariñosos
       "Para mi Eli, la dueña de todo mi corazón ❤️",
       "Mi gordita hermosa, mi bebé 🥺",
       "Mi foquita lelonda, la más tierna del universo 🦭",
@@ -184,8 +251,6 @@
       "Mi bebé, mi mundo, mi todo 💖",
       "Mi persona favorita en todo el planeta 💛",
       "Gordita mía, eres perfecta tal y como eres y te amo así 🥰",
-      
-      // Cachetitos, ojitos y ternura (100% tuyos)
       "Me encantan tus cachetitos, cuando sonríes se marcan más y me dan mucha ternura 🥺",
       "Eres tan linda cuando sonríes y se te marcan tus cachetitos 🫠",
       "Tienes unos ojitos hermosos que me encantan mirarle ✨",
@@ -194,16 +259,12 @@
       "Me da muchísima ternura cada gesto que haces 🥺",
       "Nadie tiene una sonrisa más hermosa y tierna que la tuya 🌻",
       "Me encanta hacerte sentir bien y verte sonreír siempre 💛",
-
-      // Dinámica de la relación (Ella manda)
       "Aquí manda mi Eli y se hace lo que ella diga 👑",
       "Lo que mi niña quiera, se hace y punto 😌",
       "Mi Eli preciosa, la que manda en esta relación 👸",
       "Te amo muchísimo, eres la más hermosa de todas 💕",
       "Soy el chico más afortunado por tenerte a mi lado 💍",
       "Me tienes enamorado por completo 🤤",
-      
-      // Naruto (Otaku)
       "Eres la Hokage de mi corazón 🍃",
       "Nuestro amor es más fuerte que cualquier técnica de Naruto 🌀",
       "Tú eres mi camino ninja favorito ✨",
@@ -214,8 +275,6 @@
       "Contigo quiero vivir todas las aventuras de nuestra historia 🍥",
       "Mi amor por ti es inmenso y sincero 💛",
       "Juntos superaremos cualquier cosa que se presente 📜",
-      
-      // Futuro y años juntos
       "Esperaremos estos años juntos, te lo prometo ⏳",
       "Valdrá la pena cada segundo esperando y construyendo nuestro futuro 🥰",
       "No importa el tiempo, siempre quiero estar contigo 🕰️",
@@ -230,30 +289,40 @@
 
     const sprites = [];
     frases.forEach((text) => {
-      const sprite = createMinimalistText(text);
+      const sprite = createGlowText(text);
       sprite.position.set(
-        (Math.random() - 0.5) * 50,
-        (Math.random() - 0.5) * 20 + 2,
-        (Math.random() - 0.5) * 50
+        (Math.random() - 0.5) * 48,
+        (Math.random() - 0.5) * 18 + 2,
+        (Math.random() - 0.5) * 48
       );
       scene.add(sprite);
       sprites.push({ mesh: sprite, offset: Math.random() * 100 });
     });
 
-    // --- 5. BUCLE DE ANIMACIÓN ---
+    // --- 7. BUCLE DE ANIMACIÓN FLUIDA ---
     function animate() {
       requestAnimationFrame(animate);
       
-      const time = Date.now() * 0.0005;
+      const time = Date.now() * 0.0006;
       
+      // Rotar y flotar flores
       flowers.forEach((f, index) => {
-        f.rotation.y += 0.005;
-        f.rotation.z += 0.002;
-        f.position.y += Math.sin(time + index) * 0.01;
+        f.mesh.rotation.x += f.rotSpeedX;
+        f.mesh.rotation.y += f.rotSpeedY;
+        f.mesh.position.y += Math.sin(time + index) * 0.008;
       });
 
+      // Animar partículas de polvo estelar
+      const positions = starDust.geometry.attributes.position.array;
+      for(let i = 1; i < positions.length; i += 3) {
+        positions[i] -= 0.02; // Caen lentamente
+        if(positions[i] < -20) positions[i] = 20; // Reinician arriba
+      }
+      starDust.geometry.attributes.position.needsUpdate = true;
+
+      // Flotar textos suavemente
       sprites.forEach(s => {
-        s.mesh.position.y += Math.sin(time * 2 + s.offset) * 0.005;
+        s.mesh.position.y += Math.sin(time * 2 + s.offset) * 0.004;
       });
 
       controls.update();
